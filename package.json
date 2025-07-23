@@ -19,5 +19,8 @@
     },
     "dependencies": {
         "moment-timezone": "^0.6.0"
+    },
+    "devDependencies": {
+        "koishi-plugin-cron": "^3.1.0"
     }
 }

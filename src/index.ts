@@ -2,9 +2,11 @@ import { Context, Schema } from "koishi";
 import { applyModel } from "./model";
 import { get_all_morning_night_data, get_morning, get_night } from "./data_source";
 import moment from "moment-timezone";
+import {} from "koishi-plugin-cron";
+import { applycron } from "./scheduler";
 
 export const name = "sleep";
-export const inject = ["database"];
+export const inject = ["database", "cron"];
 
 export interface Config {
     timezone: string;
@@ -67,6 +69,7 @@ const NIGHT_MESSAGES = ["晚安", "睡觉", "睡了", "晚安哇", "good night",
 
 export async function apply(ctx: Context, config: Config) {
     applyModel(ctx);
+    await applycron(ctx, config);
     ctx.on("message", async (session) => {
         if (MORNING_MESSAGES.some((msg) => session.content?.startsWith(msg)) || session.content === "早") {
             if (session.guildId && session.userId) {
