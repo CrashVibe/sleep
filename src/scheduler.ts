@@ -1,8 +1,10 @@
 import { Context } from "koishi";
 import { Config } from ".";
+import { applyModel } from "./model";
 
 async function groupo_daily_refresh(ctx: Context) {
     await ctx.database.drop("sleep_group");
+    applyModel(ctx);
     ctx.logger.info("每日早晚安群数据已刷新！");
 }
 
