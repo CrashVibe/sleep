@@ -35,7 +35,8 @@ export async function get_morning(ctx: Context, config: Config, uid: string, gid
 
     // 检查是否隔日了
     if (last_sleep_time.isBefore(now_time, "day")) {
-        return `你昨天 ${last_sleep_time.format("HH:mm")} 睡觉，今天 ${now_time.format("HH:mm")} 了，快起床吧！`;
+        const randomIndex = Math.floor(Math.random() * config.morningPrompts.length);
+        return config.morningPrompts[randomIndex];
     }
 
     // 能不能多次起床
