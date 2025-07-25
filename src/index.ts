@@ -97,7 +97,7 @@ export async function apply(ctx: Context, config: Config) {
         }
     });
 
-    ctx.command("morning").action(async ({ session }) => {
+    ctx.command("morning", "早安消息打卡").action(async ({ session }) => {
         if (!session || !session.content) {
             return;
         }
@@ -109,7 +109,7 @@ export async function apply(ctx: Context, config: Config) {
         }
     });
 
-    ctx.command("night").action(async ({ session }) => {
+    ctx.command("night", "晚安消息打卡").action(async ({ session }) => {
         if (!session || !session.content) {
             return;
         }
