@@ -24,6 +24,8 @@ export interface Config {
     goodSleepInterval: number;
     deepSleepEnable: boolean;
     deepSleepInterval: number;
+    MORNING_MESSAGES: string[];
+    NIGHT_MESSAGES: string[];
     morningPrompts: string[];
     nightPrompts: string[];
 }
@@ -44,6 +46,12 @@ export const Config: Schema<Config> = Schema.object({
     goodSleepInterval: Schema.number().default(6).description("好梦间隔 (小时)"),
     deepSleepEnable: Schema.boolean().default(false).description("深度睡眠功能开关"),
     deepSleepInterval: Schema.number().default(3).description("深度睡眠间隔 (小时)"),
+    MORNING_MESSAGES: Schema.array(Schema.string())
+        .default(["早安", "早哇", "起床", "早上好", "ohayo", "哦哈哟", "お早う", "good morning"])
+        .description("触发早安的关键词"),
+    NIGHT_MESSAGES: Schema.array(Schema.string())
+        .default(["晚安", "睡觉", "睡了", "晚安哇", "good night", "おやすみ", "お休みなさい"])
+        .description("触发晚安的关键词"),
     morningPrompts: Schema.array(Schema.string())
         .default([
             "元气满满的一天开始啦！ (/▽＼)",
@@ -63,30 +71,56 @@ export const Config: Schema<Config> = Schema.object({
         .description("晚安提示语")
 });
 
-const MORNING_MESSAGES = ["早安", "早哇", "起床", "早上好", "ohayo", "哦哈哟", "お早う", "good morning"];
-
-const NIGHT_MESSAGES = ["晚安", "睡觉", "睡了", "晚安哇", "good night", "おやすみ", "お休みなさい"];
-
 export async function apply(ctx: Context, config: Config) {
     applyModel(ctx);
     await applycron(ctx, config);
     ctx.on("message", async (session) => {
-        if (MORNING_MESSAGES.some((msg) => session.content?.startsWith(msg)) || session.content === "早") {
-            if (session.guildId && session.userId) {
-                await session.send(await get_morning(ctx, config, session.userId, session.guildId));
-            } else {
-                // TODO: 添加私聊的处理逻辑
-                await session.send("私聊早晚安还在开发中，去群里试试吧～");
+        if (!session || !session.content) {
+            return;
+        }
+        if (session.guildId) {
+            const targetChannels = await ctx.database.get("channel", {
+                id: session.guildId,
+                platform: session.platform
+            });
+            if (targetChannels.length === 0) {
+                return;
             }
-        } else if (NIGHT_MESSAGES.some((msg) => session.content?.startsWith(msg)) || session.content === "晚") {
-            if (session.guildId && session.userId) {
-                await session.send(await get_night(ctx, config, session.userId, session.guildId));
-            } else {
-                // TODO: 添加私聊的处理逻辑
-                await session.send("只有群聊才能使用晚安功能哦～");
+            if (targetChannels[0].assignee !== session.selfId) {
+                return;
             }
         }
+        if (config.MORNING_MESSAGES.some((msg) => session.content?.startsWith(msg)) || session.content === "早") {
+            await session.execute("morning");
+        } else if (config.NIGHT_MESSAGES.some((msg) => session.content?.startsWith(msg)) || session.content === "晚") {
+            await session.execute("night");
+        }
     });
+
+    ctx.command("morning").action(async ({ session }) => {
+        if (!session || !session.content) {
+            return;
+        }
+        if (session.guildId && session.userId) {
+            await session.send(await get_morning(ctx, config, session.userId, session.guildId));
+        } else {
+            // TODO: 添加私聊的处理逻辑
+            await session.send("私聊早晚安还在开发中，去群里试试吧～");
+        }
+    });
+
+    ctx.command("night").action(async ({ session }) => {
+        if (!session || !session.content) {
+            return;
+        }
+        if (session.guildId && session.userId) {
+            await session.send(await get_night(ctx, config, session.userId, session.guildId));
+        } else {
+            // TODO: 添加私聊的处理逻辑
+            await session.send("私聊早晚安还在开发中，去群里试试吧～");
+        }
+    });
+
     ctx.command("早晚安统计", "查看早晚安统计信息").action(async ({ session }) => {
         if (!session) {
             throw new Error("无法获取会话信息");
