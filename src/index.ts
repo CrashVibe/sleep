@@ -1,8 +1,8 @@
 import { Context, Schema } from "koishi";
-import { applyModel } from "./model";
-import { get_all_morning_night_data, get_morning, get_night } from "./data_source";
-import moment from "moment-timezone";
 import {} from "koishi-plugin-cron";
+import moment from "moment-timezone";
+import { get_all_morning_night_data, get_morning, get_night } from "./data_source";
+import { applyModel } from "./model";
 import { applycron } from "./scheduler";
 
 export const name = "sleep";
@@ -34,13 +34,13 @@ export const Config: Schema<Config> = Schema.object({
     timezone: Schema.string().default("Asia/Shanghai").description("设置时区，默认为 Asia/Shanghai (上海)"),
     morningEnable: Schema.boolean().default(true).description("早安时段功能开关"),
     morningStartHour: Schema.number().default(6).description("早安时段最早时间 (小时)"),
-    morningEndHour: Schema.number().default(14).description("早安时段最晚时间 (小时)"),
+    morningEndHour: Schema.number().default(15).description("早安时段最晚时间 (小时)"),
     multiGetUpEnable: Schema.boolean().default(false).description("多次起床功能开关"),
     multiGetUpInterval: Schema.number().default(6).description("多次起床间隔 (小时)"),
     superGetUpEnable: Schema.boolean().default(false).description("超级起床功能开关"),
     superGetUpInterval: Schema.number().default(1).description("超级起床间隔 (小时)"),
     nightEnable: Schema.boolean().default(true).description("晚安时段功能开关"),
-    nightStartHour: Schema.number().default(21).description("晚安时段最早时间 (小时)"),
+    nightStartHour: Schema.number().default(18).description("晚安时段最早时间 (小时)"),
     nightEndHour: Schema.number().default(6).description("晚安时段最晚时间 (小时)"),
     goodSleepEnable: Schema.boolean().default(true).description("好梦功能开关"),
     goodSleepInterval: Schema.number().default(6).description("好梦间隔 (小时)"),
@@ -57,7 +57,19 @@ export const Config: Schema<Config> = Schema.object({
             "元气满满的一天开始啦！ (/▽＼)",
             "迎接美好的一天吧！ (￣▽￣)~*",
             "今天也要干劲满满哦~ (๑•̀ㅂ•́)و✧",
-            "今天也要加油哦！ (ง •_•)ง"
+            "今天也要加油哦！ (ง •_•)ง",
+            "早安～今天是充满希望的一天呢！ (ﾟ∀ﾟ)/",
+            "阳光这么好，心情也要像阳光一样灿烂哦~ (´▽`)",
+            "新的一天，新的开始！ ᕙ(⇀‸↼‰)ᕗ",
+            "早起的鸟儿有虫吃，早起的你有好运哦~ (◕‿◕)♡",
+            "起床啦起床啦～美好的一天在等着你呢！ (≧∇≦)/",
+            "Morning sunshine~ 愿你的一天像阳光一样温暖！ (´∀`*)ゞ",
+            "今天的你一定会很棒的！加油加油~ ᕦ(ò_óˇ)ᕤ",
+            "早安安~ 记得要好好吃早餐哦！ (｡◕‿◕｡)",
+            "新的一天开始了！今天要做什么有趣的事呢～ (☆▽☆)",
+            "おはよう！今日も一日よろしくお願いします~ (｡･ω･｡)ﾉ♡",
+            "早安呀~ 今天的空气都特别清新呢！ (^◡^)っ",
+            "一日之计在于晨，今天也要元气满满哦！ ヾ(≧▽≦*)o"
         ])
         .description("早安提示语"),
     nightPrompts: Schema.array(Schema.string())
@@ -66,7 +78,21 @@ export const Config: Schema<Config> = Schema.object({
             "祝你有个好梦～(￣o￣) . z Z",
             "晚安(∪｡∪)｡｡｡zzz",
             "おやすみなさい～(´-ω-)`~*",
-            "睡个好觉哦(˘ω˘)ｽﾞﾔｧ…"
+            "睡个好觉哦 (˘ω˘)ｽﾞﾔｧ…",
+            "今天辛苦啦～好好休息，明天继续加油！ (´∀`)ノ~",
+            "夜深了，该让身心都放松下来了呢~ (｡･ω･｡)ﾉ♡",
+            "愿你在梦里遇见最美好的事情～ (´-ω-`)zzz",
+            "Good night~ 让疲惫随着夜风飘走吧！ (´-ω-`)zzz",
+            "月亮都困了，你也该睡觉觉啦~ (´-ω-`)zzz",
+            "晚安安～希望你做个甜甜的梦！ (´-ω-`)zzz",
+            "一天的忙碌结束了，现在是属于你的休息时间~ (´-ω-`)zzz",
+            "Sleep tight～ 愿星星为你点亮美梦！ (´-ω-`)zzz",
+            "慢慢闭上眼睛，让今天的美好伴你入眠~ (˘▾˘)~",
+            "夜安~ 记得盖好小被子哦！ (｡◕‿◕｡)ﾉ",
+            "今天也很棒呢！现在就安心地休息吧~ ♪(´▽`)",
+            "お疲れ様～今夜もゆっくり休んでね！ (´-ω-`)zzz",
+            "放下手机，放下烦恼，好好睡一觉吧~ (◡ ω ◡)",
+            "晚安，愿你的梦境比现实更美丽~ (´-ω-`)zzz"
         ])
         .description("晚安提示语")
 });

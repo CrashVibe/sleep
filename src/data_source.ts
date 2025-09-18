@@ -1,8 +1,7 @@
-import { Context } from "koishi";
+import { $, Context } from "koishi";
 import moment from "moment-timezone";
 import { Config } from ".";
 import { get_adjusted_minutes, isTimeInMorningRange, isTimeInNightRange } from "./utils";
-import { $ } from "koishi";
 
 /**
  * 获取早安消息
@@ -18,7 +17,11 @@ export async function get_morning(ctx: Context, config: Config, uid: string, gid
         const start_time = config.morningStartHour;
         const end_time = config.morningEndHour;
         if (!isTimeInMorningRange(config.timezone, now_time, start_time, end_time)) {
-            return `现在都 ${now_time.hour()} 点啦(╯‵□′)╯︵┻━┻`;
+            if (now_time.hour() < start_time) {
+                return `这么早就起床啦~ 不过现在还是 ${now_time.hour()} 点呢，要不再休息一会儿？ (´∀｀)`;
+            } else {
+                return `现在 ${now_time.hour()} 点了呢~ 虽然有点晚，但新的一天加油哦！ (´∀｀)`;
+            }
         }
     }
 
@@ -270,7 +273,11 @@ export async function get_night(ctx: Context, config: Config, uid: string, gid: 
         const start_time = config.nightStartHour;
         const end_time = config.nightEndHour;
         if (!isTimeInNightRange(config.timezone, now_time, start_time, end_time)) {
-            return `拜托现在 ${now_time.hour()} 点了！现在可不是睡觉时间啦 =n=`;
+            if (now_time.hour() >= end_time && now_time.hour() < start_time) {
+                return `现在是 ${now_time.hour()} 点，正是美好的一天呢~ 要不要先享受这美好时光？ (◕‿◕)`;
+            } else {
+                return `现在 ${now_time.hour()} 点了~ 虽然时间有点特殊，但如果累了就好好休息吧！ (´ω｀)`;
+            }
         }
     }
 
